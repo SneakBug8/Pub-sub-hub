@@ -3,42 +3,42 @@ using System.Threading;
 using LiteNetLib;
 using LiteNetLib.Utils;
 
-namespace PP2P_server
+class Program
 {
-    class Program
+    public static NetManager Server;
+    public static NetPacketProcessor NetPacketProcessor;
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+        Console.WriteLine("Starting server");
+
+        EventBasedNetListener listener = new EventBasedNetListener();
+        Server = new NetManager(listener);
+        Server.Start(9051 /* port */);
+
+        NetPacketProcessor = new NetPacketProcessor();
+
+        listener.ConnectionRequestEvent += (connection) =>
         {
-            Console.WriteLine("Starting server");
-
-            EventBasedNetListener listener = new EventBasedNetListener();
-            NetManager server = new NetManager(listener);
-            server.Start(9051 /* port */);
-
-            listener.ConnectionRequestEvent += (connection) =>
-            {
-                connection.Accept();
-            };
+            connection.Accept();
+        };
 
 
-            listener.PeerConnectedEvent += peer =>
-            {
-                Console.WriteLine("We got connection: {0}", peer.EndPoint); // Show peer ip
-                NetDataWriter writer = new NetDataWriter();                 // Create writer class
-                writer.Put("Hello client!");                                // Put some string
-                peer.Send(writer, DeliveryMethod.ReliableOrdered);             // Send with reliability
-            };
+        listener.PeerConnectedEvent += peer =>
+        {
+            Console.WriteLine("New connection from: {0}", peer.EndPoint); // Show peer ip
+        };
 
-            Console.WriteLine("Server started");
+        listener.NetworkReceiveEvent += (peer, reader, method) => NetPacketProcessor.ReadAllPackets(reader, peer);
+
+        Console.WriteLine("Server started");
 
 
-            while (true)
-            {
-                server.PollEvents();
-                Thread.Sleep(15);
-            }
-
-            server.Stop();
+        while (true)
+        {
+            Server.PollEvents();
+            Thread.Sleep(15);
         }
+
+        Server.Stop();
     }
 }
