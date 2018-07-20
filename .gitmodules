@@ -1,0 +1,3 @@
+[submodule "src/Packets"]
+	path = src/Packets
+	url = https://gitlab.com/SneakBug8/PP2P-Packets.git
