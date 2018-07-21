@@ -9,7 +9,7 @@ class Program
     public static NetPacketProcessor NetPacketProcessor;
     static void Main(string[] args)
     {
-        Console.WriteLine("Starting server");
+        Logger.Log("Starting server");
 
         EventBasedNetListener listener = new EventBasedNetListener();
         Server = new NetManager(listener);
@@ -29,17 +29,27 @@ class Program
 
         listener.PeerConnectedEvent += peer =>
         {
-            Console.WriteLine("New connection from: {0}", peer.EndPoint); // Show peer ip
+            Logger.Log($"New connection from: {peer.EndPoint}"); // Show peer ip
         };
 
         listener.PeerDisconnectedEvent += (peer, disconnectinfo) =>
         {
-            Console.WriteLine("Player disconnected from: {0} because of {1}", peer.EndPoint, disconnectinfo.Reason); // Show peer ip
+            Logger.Log($"Player disconnected from: {peer.EndPoint} because of {disconnectinfo.Reason}"); // Show peer ip
         };
 
-        listener.NetworkReceiveEvent += (peer, reader, method) => NetPacketProcessor.ReadAllPackets(reader, peer);
+        listener.NetworkReceiveEvent += (peer, reader, method) =>
+        {
+            try
+            {
+                NetPacketProcessor.ReadAllPackets(reader, peer);
+            }
+            catch (Exception e)
+            {
+                Logger.Log(e.Message + " " + e.StackTrace);
+            }
+        };
 
-        Console.WriteLine("Server started");
+        Logger.Log("Server started");
 
 
         while (true)

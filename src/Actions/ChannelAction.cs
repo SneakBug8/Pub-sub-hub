@@ -13,7 +13,7 @@ public class ChannelAction : Action
         if (ChannelManager.Global.Channels.ContainsKey(packet.Channel))
         {
             var channel = ChannelManager.Global.Channels[packet.Channel];
-            Console.WriteLine($"{peer.EndPoint} [{packet.Type}: {packet.Content}");
+            Logger.Log($"{peer.EndPoint} [{packet.Type}: {packet.Content}");
             channel.SendToAll(packet, peer);
         }
     }

@@ -22,6 +22,6 @@ public class SubscribeAction : Action
         }
 
         channel.Subscibers.Add(peer);
-        Console.WriteLine($"{peer.EndPoint} subscibed to {packet.Channel}.");
+        Logger.Log($"{peer.EndPoint} subscibed to {packet.Channel}.");
     }
 }

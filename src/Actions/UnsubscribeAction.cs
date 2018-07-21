@@ -1,3 +1,4 @@
+using System;
 using LiteNetLib;
 
 public class UnsubscribeAction : Action
@@ -11,6 +12,7 @@ public class UnsubscribeAction : Action
     {
         if (ChannelManager.Global.Channels.ContainsKey(packet.Channel))
         {
+            Logger.Log(peer.EndPoint + " unsubscribed from " + packet.Channel);
             var channel = ChannelManager.Global.Channels[packet.Channel];
             channel.Subscibers.Remove(peer);
         }
