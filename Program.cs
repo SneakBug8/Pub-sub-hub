@@ -22,10 +22,19 @@ class Program
             connection.Accept();
         };
 
+        new ChannelManager();
+        new ChannelAction();
+        new SubscribeAction();
+        new UnsubscribeAction();
 
         listener.PeerConnectedEvent += peer =>
         {
             Console.WriteLine("New connection from: {0}", peer.EndPoint); // Show peer ip
+        };
+
+        listener.PeerDisconnectedEvent += (peer, disconnectinfo) =>
+        {
+            Console.WriteLine("Player disconnected from: {0} because of {1}", peer.EndPoint, disconnectinfo.Reason); // Show peer ip
         };
 
         listener.NetworkReceiveEvent += (peer, reader, method) => NetPacketProcessor.ReadAllPackets(reader, peer);
