@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using LiteNetLib;
 using LiteNetLib.Utils;
 
@@ -51,13 +52,30 @@ class Program
 
         Logger.Log("Server started");
 
+        MinuteLoop();
 
-        while (true)
+        try
         {
-            Server.PollEvents();
-            Thread.Sleep(15);
+            while (true)
+            {
+                Server.PollEvents();
+                Thread.Sleep(15);
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.Log(e.Message + " " + e.StackTrace);
         }
 
         Server.Stop();
+    }
+
+    static async void MinuteLoop()
+    {
+        while (true)
+        {
+            Logger.Log("Players online: " + Server.GetPeersCount(ConnectionState.Connected));
+            await Task.Delay(60 * 1000);
+        }
     }
 }
